@@ -7,12 +7,16 @@ import { useCallback, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import AuthSocialButton from "./AuthSocialButton";
 import { BsGithub, BsGoogle  } from 'react-icons/bs';
+import { toast } from "react-hot-toast";
+import { signIn, useSession } from 'next-auth/react';
+import { useRouter } from "next/navigation";
 
 type Variant = 'LOGIN' | 'REGISTER';
 
 function AuthForm() {
   const [variant, setVariant] = useState<Variant>('LOGIN')
   const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
 
   const toggleVariant = useCallback(() => {
     setVariant(variant === 'LOGIN' ? 'REGISTER' : 'LOGIN')
@@ -35,17 +39,42 @@ function AuthForm() {
 
     if (variant === 'REGISTER') {
       axios.post('/api/register', data)
+      .catch(() => toast.error('Something went wrong!'))
+      .finally(() => setIsLoading(false))
     }
-
+    
     if (variant === 'LOGIN') {
-      // NextAuth SignIn
+      signIn('credentials', {
+        ...data,
+        redirect: false
+      })
+      .then((callback) => {
+        if (callback?.error) {
+          toast.error('Invalid credentials!');
+        }
+
+        if (callback?.ok && !callback?.error) {
+          toast.success('Logged in successfully!');
+        }
+      })
+      .finally(() => setIsLoading(false))
     }
   }
 
   const socialAction = (action: string) => {
     setIsLoading(true)
 
-    // NextAuth Social SignIn
+    signIn(action, { redirect: false })
+      .then((callback) => {
+        if (callback?.error) {
+          toast.error('Invalid credentials!');
+        }
+
+        if (callback?.ok && !callback?.error) {
+          toast.success('Logged in successfully!');
+        }
+      })
+      .finally(() => setIsLoading(false));
   }
 
 
@@ -70,7 +99,6 @@ function AuthForm() {
               disabled={isLoading}
               register={register}
               errors={errors}
-              required
               id="name" 
               label="Name"
             />
@@ -79,7 +107,6 @@ function AuthForm() {
             disabled={isLoading}
             register={register}
             errors={errors}
-            required
             id="email" 
             label="Email address" 
             type="email"
@@ -88,7 +115,6 @@ function AuthForm() {
             disabled={isLoading}
             register={register}
             errors={errors}
-            required
             id="password" 
             label="Password" 
             type="password"
