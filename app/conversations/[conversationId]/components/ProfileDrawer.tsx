@@ -10,6 +10,7 @@ import useOtherUser from '@/app/hooks/useOtherUser';
 
 import Avatar from '@/app/components/Avatar';
 import AvatarGroup from '@/app/components/AvatarGroup';
+import ConfirmModal from './ConfirmModal';
 
 interface ProfileDrawerProps {
   isOpen: boolean;
@@ -45,6 +46,10 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
 
   return (
     <>
+      <ConfirmModal 
+        isOpen={confirmOpen} 
+        onClose={() => setConfirmOpen(false)}
+      />
       <Transition.Root show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={onClose}>
           <Transition.Child
@@ -56,8 +61,8 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-          <div className="fixed inset-0 bg-black bg-opacity-40" />
-        </Transition.Child>
+            <div className="fixed inset-0 bg-black bg-opacity-40" />
+          </Transition.Child>
 
           <div className="fixed inset-0 overflow-hidden">
             <div className="absolute inset-0 overflow-hidden">
