@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 import { MdOutlineGroupAdd } from 'react-icons/md';
 import clsx from "clsx";
+import GroupChatModal from "@/app/components/modals/GroupChatModal";
 
 import useConversation from "@/app/hooks/useConversation";
 import ConversationBox from "./ConversationBox";
@@ -31,6 +32,11 @@ const ConversationList: React.FC<ConversationListProps> = ({
 
   return (
     <>
+      <GroupChatModal 
+        users={users} 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)}
+      />
       <aside className={clsx(`
         fixed 
         inset-y-0 
