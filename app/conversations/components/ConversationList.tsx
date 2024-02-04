@@ -85,7 +85,7 @@ const ConversationList: React.FC<ConversationListProps> = ({
       pusherClient.unbind('conversation:new', newHandler)
       pusherClient.unbind('conversation:remove', removeHandler)
     }
-  }, [pusherKey, router]);
+  }, [pusherKey, router, conversationId]);
 
   return (
     <>
