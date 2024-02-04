@@ -7,6 +7,7 @@ import { Conversation, User } from '@prisma/client';
 import { format } from 'date-fns';
 
 import useOtherUser from '@/app/hooks/useOtherUser';
+import useActiveList from '@/app/hooks/useActiveList';
 
 import Avatar from '@/app/components/Avatar';
 import AvatarGroup from '@/app/components/AvatarGroup';
@@ -36,13 +37,16 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
     return data.name || otherUser.name;
   }, [data.name, otherUser.name]);
 
+  const { members } = useActiveList();
+  const isActive = members.indexOf(otherUser?.email!) !== -1;
+
   const statusText = useMemo(() => {
     if (data.isGroup) {
       return `${data.users.length} members`;
     }
 
-    return 'Active';
-  }, [data]);
+    return isActive ? 'Active' : 'Offline'
+  }, [data, isActive]);
 
   return (
     <>
@@ -61,8 +65,8 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-black bg-opacity-40" />
-          </Transition.Child>
+          <div className="fixed inset-0 bg-black bg-opacity-40" />
+        </Transition.Child>
 
           <div className="fixed inset-0 overflow-hidden">
             <div className="absolute inset-0 overflow-hidden">
@@ -113,90 +117,90 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
                               </div>
                             </div>
                           </div>
-                          <div className="w-full pb-5 pt-5 sm:px-0 sm:pt-0">
-                            <dl className="space-y-8 px-4 sm:space-y-6 sm:px-6">
-                              {data.isGroup && (
-                                <div>
-                                  <dt 
-                                    className="
-                                      text-sm 
-                                      font-medium 
-                                      text-gray-500 
-                                      sm:w-40 
-                                      sm:flex-shrink-0
-                                    "
-                                  >
-                                    Emails
-                                  </dt>
-                                  <dd 
-                                    className="
-                                      mt-1 
-                                      text-sm 
-                                      text-gray-900 
-                                      sm:col-span-2
-                                    "
-                                  >
-                                    {data.users.map((user) => user.email).join(', ')}
-                                  </dd>
-                                </div>
-                              )}
-                              {!data.isGroup && (
-                                <div>
-                                  <dt 
-                                    className="
-                                      text-sm 
-                                      font-medium 
-                                      text-gray-500 
-                                      sm:w-40 
-                                      sm:flex-shrink-0
-                                    "
-                                  >
-                                    Email
-                                  </dt>
-                                  <dd 
-                                    className="
-                                      mt-1 
-                                      text-sm 
-                                      text-gray-900 
-                                      sm:col-span-2
-                                    "
-                                  >
-                                    {otherUser.email}
-                                  </dd>
-                                </div>
-                              )}
-                              {!data.isGroup && (
-                                <>
-                                  <hr />
-                                  <div>
-                                    <dt 
-                                      className="
-                                        text-sm 
-                                        font-medium 
-                                        text-gray-500 
-                                        sm:w-40 
-                                        sm:flex-shrink-0
-                                      "
-                                    >
-                                      Joined
-                                    </dt>
-                                    <dd 
-                                      className="
-                                        mt-1 
-                                        text-sm 
-                                        text-gray-900 
-                                        sm:col-span-2
-                                      "
-                                    >
-                                      <time dateTime={joinedDate}>
-                                        {joinedDate}
-                                      </time>
-                                    </dd>
-                                  </div>
-                                </>
-                              )}
-                            </dl>
-                          </div>
+                        <div className="w-full pb-5 pt-5 sm:px-0 sm:pt-0">
+                        <dl className="space-y-8 px-4 sm:space-y-6 sm:px-6">
+                          {data.isGroup && (
+                            <div>
+                              <dt 
+                                className="
+                                  text-sm 
+                                  font-medium 
+                                  text-gray-500 
+                                  sm:w-40 
+                                  sm:flex-shrink-0
+                                "
+                              >
+                                Emails
+                              </dt>
+                              <dd 
+                                className="
+                                  mt-1 
+                                  text-sm 
+                                  text-gray-900 
+                                  sm:col-span-2
+                                "
+                              >
+                                {data.users.map((user) => user.email).join(', ')}
+                              </dd>
+                            </div>
+                          )}
+                          {!data.isGroup && (
+                            <div>
+                              <dt 
+                                className="
+                                  text-sm 
+                                  font-medium 
+                                  text-gray-500 
+                                  sm:w-40 
+                                  sm:flex-shrink-0
+                                "
+                              >
+                                Email
+                              </dt>
+                              <dd 
+                                className="
+                                  mt-1 
+                                  text-sm 
+                                  text-gray-900 
+                                  sm:col-span-2
+                                "
+                              >
+                                {otherUser.email}
+                              </dd>
+                            </div>
+                          )}
+                          {!data.isGroup && (
+                            <>
+                              <hr />
+                              <div>
+                                <dt 
+                                  className="
+                                    text-sm 
+                                    font-medium 
+                                    text-gray-500 
+                                    sm:w-40 
+                                    sm:flex-shrink-0
+                                  "
+                                >
+                                  Joined
+                                </dt>
+                                <dd 
+                                  className="
+                                    mt-1 
+                                    text-sm 
+                                    text-gray-900 
+                                    sm:col-span-2
+                                  "
+                                >
+                                  <time dateTime={joinedDate}>
+                                    {joinedDate}
+                                  </time>
+                                </dd>
+                              </div>
+                            </>
+                          )}
+                        </dl>
+                      </div>
                         </div>
                       </div>
                     </div>

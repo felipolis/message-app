@@ -2,6 +2,7 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import { NextResponse } from "next/server";
 
 import prisma from "@/app/libs/prismadb";
+import { pusherServer } from "@/app/libs/pusher";
 
 interface IParams {
   conversationId?: string;
@@ -16,7 +17,7 @@ export async function DELETE(
     const currentUser = await getCurrentUser();
 
     if (!currentUser?.id) {
-      return new NextResponse('Unauthorized', { status: 401 });
+      return NextResponse.json(null);
     }
 
     const existingConversation = await prisma.conversation.findUnique({
@@ -41,9 +42,14 @@ export async function DELETE(
       },
     });
 
+    existingConversation.users.forEach((user) => {
+      if (user.email) {
+        pusherServer.trigger(user.email, 'conversation:remove', existingConversation);
+      }
+    });
+
     return NextResponse.json(deletedConversation)
   } catch (error) {
-    console.log(error, 'ERROR_CONVERSATION_DELETE')
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return NextResponse.json(null);
   }
 }
